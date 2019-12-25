@@ -36,7 +36,7 @@ if not app.debug:
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
 
-    if Path('logs').exists:
+    if not Path('logs').exists:
         Path('logs').mkdir()
 
     file_handler = RotatingFileHandler(
