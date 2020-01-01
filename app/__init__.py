@@ -7,8 +7,11 @@ from flask_login import LoginManager
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from pathlib import Path
+from flask_mail import Mail
 
 app = Flask(__name__)
+mail = Mail(app)
+
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
