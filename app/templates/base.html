@@ -1,7 +1,11 @@
 {% extends 'bootstrap/base.html' %} {% block title %} {% if title %}{{ title }}
 - Microblog{% else %}Welcome to Microblog{% endif %} {% endblock %} {% block
-scripts %} {{ super() }} {{ moment.include_moment() }} {% endblock %} {% block
-navbar %}
+scripts %} {{ super() }} {{ moment.include_moment() }}
+<script>
+  function translate(sourceElem, targetElem, sourceLang, targetLang) {}
+</script>
+
+{% endblock %} {% block navbar %}
 <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
