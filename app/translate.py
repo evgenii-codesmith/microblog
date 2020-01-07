@@ -7,10 +7,6 @@ def translate(text, source_lang, target_lang):
         result = translate.translate_text(
             Text=text, SourceLanguageCode=source_lang,
             TargetLanguageCode=target_lang)
-        # status = result['ResponseMetadata']['HTTPStatusCode']
         return result.get('TranslatedText')
     except Exception as e:
         return (f'Error: translation service failed with: { e }')
-
-
-#translate('hello', 'en', 'tr')

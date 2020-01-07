@@ -27,13 +27,14 @@ def index():
     form = PostForm()
     if form.validate_on_submit():
         language = guess_language(form.post.data)
+        detected_lang = language
         if language == 'UNKNOWN' or len(language) > 5:
             language = ''
         post = Post(body=form.post.data,
                     author=current_user, language=language)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live!')
+        flash('Your post is now live! in lang {}'.format(detected_lang))
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(
@@ -205,6 +206,7 @@ def reset_password(token):
 @app.route('/translate', methods=['POST'])
 @login_required
 def translate_text():
-    return jsonify({'text': translate(request.form['text'],
-                                      request.form['source_lang'],
-                                      request.form['target_lang'])})
+    data = request.json  # type(data) -> dict
+    return jsonify({'text': translate(data['post_org_text'],
+                                      data['source_lang'],
+                                      data['target_lang'])})
