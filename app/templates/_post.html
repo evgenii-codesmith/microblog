@@ -12,14 +12,15 @@
       <br />
       {% if post.language and post.language != g.locale %}
       <span id="translation{{ post.id }}">
-        <a href="#" class="translate_link">Translate</a>
+        <a
+          href="javascript: translate('{{ post.id }}','{{ post.language }}','{{ g.locale }}', '{{ post.body }}')"
+          class="translate_link"
+          >Translate</a
+        >
       </span>
       {% endif %} said {{ moment(post.timestamp).fromNow() }}:
       <br />
       <span id="post{{ post.id }}">{{ post.body }}</span>
-      <span id="language{{ post.id }}" style="visibility: hidden;"
-        >{{ post.language }}</span
-      >
     </td>
   </tr>
 </table>

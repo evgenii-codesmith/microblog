@@ -1,18 +1,10 @@
-let elements = document.querySelectorAll("a.translate_link");
-
-elements.forEach(element => {
-  element.addEventListener("click", translate);
-});
-
-function translate() {
-  let id = this.parentNode.id;
-  id = id.replace(/\D/g, "");
-  let post = document.getElementById("post" + id);
-  let post_language = document.getElementById("language" + id);
+function translate(post_id, source_language, target_language, post_content) {
+  let post = document.getElementById("post" + post_id);
+  let translate = document.getElementById("translation" + post_id);
   let data = {
-    source_lang: post_language.textContent,
-    target_lang: g_locale,
-    post_org_text: post.textContent
+    source_lang: source_language,
+    target_lang: target_language,
+    post_org_text: post_content
   };
 
   fetch("/translate", {
@@ -31,7 +23,7 @@ function translate() {
     .then(data => {
       if (data.text != "error") {
         post.prepend(data.text, document.createElement("br"));
-        this.remove();
+        translate.remove();
       }
     })
     .catch(error => {

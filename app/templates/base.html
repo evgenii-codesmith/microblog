@@ -3,9 +3,6 @@
 scripts %} {{ super() }} {{ moment.include_moment() }} {{ moment.lang(g.locale)
 }}
 <script src="{{ url_for('static', filename='translate.js')}}"></script>
-<script>
-  let g_locale = "{{ g.locale }}";
-</script>
 {% endblock %} {% block navbar %}
 <nav class="navbar navbar-default">
   <div class="container">
