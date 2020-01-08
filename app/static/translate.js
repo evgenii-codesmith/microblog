@@ -8,9 +8,10 @@ function translate() {
   let id = this.parentNode.id;
   id = id.replace(/\D/g, "");
   let post = document.getElementById("post" + id);
+  let post_language = document.getElementById("language" + id);
   let data = {
-    source_lang: "en",
-    target_lang: "tr",
+    source_lang: post_language.textContent,
+    target_lang: g_locale,
     post_org_text: post.textContent
   };
 
