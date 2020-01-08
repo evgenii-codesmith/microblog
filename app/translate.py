@@ -9,4 +9,4 @@ def translate(text, source_lang, target_lang):
             TargetLanguageCode=target_lang)
         return result.get('TranslatedText')
     except Exception as e:
-        return ('')
+        return ('error')

@@ -28,7 +28,7 @@ function translate() {
       return response.json();
     })
     .then(data => {
-      if (data.length > 0) {
+      if (data.text != "error") {
         post.prepend(data.text, document.createElement("br"));
         this.remove();
       }
