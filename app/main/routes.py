@@ -1,21 +1,16 @@
-from app.email import send_password_reset_email
 from datetime import datetime
-from werkzeug.urls import url_parse
-from app.models import User, Post
-from flask_login import current_user, login_user, logout_user, login_required
-from app import app, db
-from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
-from app.forms import ResetPasswordRequestForm
-from app.forms import ResetPasswordForm
-from guess_language import guess_language
-from flask import jsonify
-from app.translate import translate
-from flask import g
+from flask import render_template, flash, redirect, url_for, request, g, jsonify, current_app
+from flask.login import current_user, login_required
 from flask_babel import get_locale
+from guess_language import guess_language
+from app import db
+from app.main.forms import EditProfileForm, PostForm
+from app.models import User, Post
+from app.translate import translate
+from app.main import bp
 
 
-@app.before_request
+@bp.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
@@ -23,8 +18,8 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
     form = PostForm()
@@ -41,7 +36,7 @@ def index():
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, current_app.config['POSTS_PER_PAGE'], False)
     next_url = url_for(
         'index', page=posts.next_num) if posts.has_next else None
     prev_url = url_for(
@@ -51,13 +46,13 @@ def index():
                            next_url=next_url, prev_url=prev_url)
 
 
-@app.route('/user/<username>')
+@bp.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
     posts = user.posts.order_by(Post.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, current_app.config['POSTS_PER_PAGE'], False)
     next_url = url_for('user', username=user.username,
                        page=posts.next_num) if posts.has_next else None
     prev_url = url_for('user', username=user.username,
@@ -67,7 +62,7 @@ def user(username):
                            prev_url=prev_url)
 
 
-@app.route('/edit_profile', methods=['GET', 'POST'])
+@bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm(current_user.username)
@@ -84,7 +79,7 @@ def edit_profile():
                            form=form)
 
 
-@app.route('/follow/<username>')
+@bp.route('/follow/<username>')
 @login_required
 def follow(username):
     user = User.query.filter_by(username=username).first()
@@ -100,7 +95,7 @@ def follow(username):
     return redirect(url_for('user', username=username))
 
 
-@app.route('/unfollow/<username>')
+@bp.route('/unfollow/<username>')
 @login_required
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
@@ -116,12 +111,12 @@ def unfollow(username):
     return redirect(url_for('user', username=username))
 
 
-@app.route('/explore')
+@bp.route('/explore')
 @login_required
 def explore():
     page = request.args.get('page', 1, type=int)
     posts = Post.query.order_by(Post.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, current_app.config['POSTS_PER_PAGE'], False)
 
     next_url = url_for(
         'explore', page=posts.next_num) if posts.has_next else None
@@ -133,7 +128,7 @@ def explore():
                            next_url=next_url)
 
 
-@app.route('/translate', methods=['POST'])
+@bp.route('/translate', methods=['POST'])
 @login_required
 def translate_text():
     data = request.json
